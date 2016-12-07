@@ -48,9 +48,6 @@ function corresponds($a,$b){
 }
 
 function getSequences($str){
-	//we can't just use a regular regex anymore, since 
-	//since an aba could overlap a previous aba
-	//I guess this was true in part 1 as well, since abbaab could have occured
 	
 	$s = [];
 	$strings = explode("|",$str);

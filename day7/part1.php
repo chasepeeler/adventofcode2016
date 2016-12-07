@@ -20,6 +20,7 @@ for($i=0;$i<count($inputs);$i++){
 		if(hasSequence($bracket)){
 			continue 2; //continue 2 to skip to the next item in the outer loop
 		}
+		$input = str_replace($bracket,"|",$input); //makes the check of the parts outside the bracket a bit easier
 	}
 	
 	if(hasSequence($input)){
@@ -32,21 +33,22 @@ for($i=0;$i<count($inputs);$i++){
 echo "There are {$tls} IPs with TLS".PHP_EOL;
 
 function hasSequence($str){
-	$regex = '/([a-z])([a-z])\2\1/';
-
 	
-	if(!preg_match_all($regex,$str,$m,PREG_SET_ORDER)){
-		//if there is no match, the sequence doesn't exist
-		return false;
-	}
-	
-	//matches could be aaaa or abba, so we need to compare our letters
-	foreach($m as $n){
-		if(strcasecmp($n[1],$n[2]) != 0){
-			//if any are abba, then it has the sequence
-			return true;
+	$strings = explode("|",$str);
+	foreach($strings as $string){
+		$string = str_replace("[","",$string);
+		$string = str_replace("]","",$string);
+		$string = str_split($string);
+		for($i=0;$i<count($string);$i++){
+			$s1 = $string[$i];
+			$s2 = $string[$i+1]?:"";
+			$s3 = $string[$i+2]?:"";
+			$s4 = $string[$i+3]?:"";
+			if($s1 == $s4 && $s2 == $s3 && $s1 != $s2){
+				return true;
+			}
 		}
 	}
-	//doesn't have the sequence, all matches must have been aaaa
+	
 	return false;
 }
