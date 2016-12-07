@@ -33,7 +33,7 @@ for($i=0;$i<count($inputs);$i++){
 		//seems the error is caused by the fact that I'm not using preg_match_all in the sequence checker..
 		//I got "lucky" and the IP above has a pattern that will match the regex in hasSequence (inside the brackets), but doesn't exclude the
 		//sequence since it's four of the same character. However, if I don't remove that string,
-		//since I'm doing doing preg_match_all, when I check the IP itself, it matches on that sequence again,
+		//since I'm not doing preg_match_all, when I check the IP itself, it matches on that sequence again,
 		//and determines it's not valid, so it doesn't see it as having TLS
 		//when I remove the string, then it matches the proper sequence further in the string, returning true.
 		//If there had been ANY instances of an aaaa sequence outside the brackets BEFORE the abba sequence, then the code as
@@ -41,7 +41,6 @@ for($i=0;$i<count($inputs);$i++){
 	}
 	
 	if(hasSequence($input)){
-		echo $inputs[$i].PHP_EOL;
 		$tls++;
 	}
 	
@@ -49,13 +48,6 @@ for($i=0;$i<count($inputs);$i++){
 }
 
 echo "There are {$tls} IPs with TLS".PHP_EOL;
-
-
-
-
-
-
-
 
 
 function hasSequence($str){
