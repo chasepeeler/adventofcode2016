@@ -20,28 +20,9 @@ for($i=0;$i<count($inputs);$i++){
 		if(hasSequence($bracket)){
 			continue 2; //continue 2 to skip to the next item in the outer loop
 		}
-		//when we test the IP for existence of the sequence outside 
-		//of the brackets, we don't want to include the brackets
-		
-		//after writing this, I realized that we shouldn't have any sequences inside the brackets
-		//if we make it this far, so, there isn't any need to remove those sections
-		//however, if I don't include the line below, my output is off by 1 (117 instead of 118)
-		$input = str_replace($bracket,"|",$input); 
-		
-		//the offending IP is nnmyoxtukxhrsgt[ecovrntpmkcaekonw]ncfzdxdlawbwtxqpkik[fkkkkxidubuatpihcnc]wqxmtvyakouvijt[tjvyhgempiufanh]bcibhdmbmbmmbyyi
-		
-		//seems the error is caused by the fact that I'm not using preg_match_all in the sequence checker..
-		//I got "lucky" and the IP above has a pattern that will match the regex in hasSequence (inside the brackets), but doesn't exclude the
-		//sequence since it's four of the same character. However, if I don't remove that string,
-		//since I'm doing doing preg_match_all, when I check the IP itself, it matches on that sequence again,
-		//and determines it's not valid, so it doesn't see it as having TLS
-		//when I remove the string, then it matches the proper sequence further in the string, returning true.
-		//If there had been ANY instances of an aaaa sequence outside the brackets BEFORE the abba sequence, then the code as
-		//currently written would not have worked.
 	}
 	
 	if(hasSequence($input)){
-		echo $inputs[$i].PHP_EOL;
 		$tls++;
 	}
 	
@@ -50,24 +31,22 @@ for($i=0;$i<count($inputs);$i++){
 
 echo "There are {$tls} IPs with TLS".PHP_EOL;
 
-
-
-
-
-
-
-
-
 function hasSequence($str){
 	$regex = '/([a-z])([a-z])\2\1/';
+
 	
-	if(!preg_match($regex,$str,$m)){
+	if(!preg_match_all($regex,$str,$m,PREG_SET_ORDER)){
+		//if there is no match, the sequence doesn't exist
 		return false;
 	}
 	
-	if(strcasecmp($m[1],$m[2]) == 0){
-		return false;
+	//matches could be aaaa or abba, so we need to compare our letters
+	foreach($m as $n){
+		if(strcasecmp($n[1],$n[2]) != 0){
+			//if any are abba, then it has the sequence
+			return true;
+		}
 	}
-	
-	return true;
+	//doesn't have the sequence, all matches must have been aaaa
+	return false;
 }
