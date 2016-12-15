@@ -1,30 +1,19 @@
 <?php
 
-if($argv[1] == "TEST"){
-	$seed = 10;
-	$dest_x = 7;
-	$dest_y = 4;
-	//we use this to draw our maze for demonstration purposes
-	$maze_rows = 7;
-	$maze_cols = 9;
-} else {
-	
-	$seed = 1362;
-	$dest_x = 31;
-	$dest_y = 39;
-	$maze_cols = $maze_rows = 41;
-}
+$seed = 1362;
+
 	
 $start = [1,1];
 
 $queue = [$start];
-$visited = [];
 $distances = [];
 $distances[1][1] = 0;
 
 $maze =[];
+$max_rows =0;
+$max_cols =0;
 
-$path = [];
+//we can use the same search BFS as part 1, since that will allow us to visit ALL of the nodes
 while($queue){
 	
 	//get the node in the queue
@@ -47,7 +36,8 @@ while($queue){
 	}
 	$possibles[] = [$x,$y+1];
 	
-	
+	$max_rows = max($y,$max_rows);
+	$max_cols = max($x,$max_cols);
 	
 	foreach($possibles as $possible){
 		list($_x,$_y) = $possible;
@@ -59,10 +49,6 @@ while($queue){
 			//then we should take this path
 			if(!isset($distances[$_x][$_y]) || $distance < $distances[$_x][$_y]){
 				$distances[$_x][$_y] = $distance;
-				
-				//save for drawing the map later
-				$path[$_x.'x'.$_y] = [$x,$y];
-				
 				//queue this up so we can visit it's neighbors
 				$queue[] = [$_x,$_y];
 			}
@@ -71,18 +57,20 @@ while($queue){
 	}
 }
 
-buildMaze($maze,$maze_rows,$maze_cols,$seed);
+buildMaze($maze,$max_rows+5,$max_cols+5,$seed);
 
-$current = [$dest_x,$dest_y];
-while($current && $current != [1,1]){
-	$maze[$current[1]][$current[0]] = "0";
-	$current = $path["{$current[0]}x{$current[1]}"];
-
+$locations = 0;
+//go through all of our distances, and find anything with <= 50 steps.
+foreach($distances as $x=>$ys){
+	foreach($ys as $y=>$distance){
+		if($distance <= 50){
+			$locations++;
+		}
+	}
 }
-$maze[$current[1]][$current[0]] = "0";
-printMaze($maze);
+echo $locations.PHP_EOL;
 
-echo $distances[$dest_x][$dest_y];
+
 
 
 
