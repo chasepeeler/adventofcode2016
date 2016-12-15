@@ -38,7 +38,7 @@ function decompress($input)
 				//parse our our symbol
 				$p = parseSymbol($symbol_buffer);
 				//get the substring we need to decompress according to the number of characters
-				$subinput = substr($input,$i+1,$p['characters'])
+				$subinput = substr($input,$i+1,$p['characters']);
 				
 				//whatever is returned will be repeated by the number specified in our symbol, and that will be added to our size
 				$size += $p['repeat']*decompress($subinput);
