@@ -25,6 +25,14 @@ while(count($ranges) > 1){
 		if(inRange($n[0],$c[0],$c[1]) && inRange($n[1],$c[0],$c[1])){
 			//ignore it, it's consumed by our current range
 		} elseif(inRange($c[1],$n[0],$n[1])){
+			//the high part of the current range is within the next range,
+			//so change our high range to the that of the next range
+			$c[1] = $n[1];
+		} elseif(bccomp(bcadd($c[1],1),$n[0]) == 0){
+			//in this case, the next range STARTS one higher than our current range ends
+			//meaning they can be combined... aka, set our current ranges max to the next ranges max
+			//we could get the correct answer for part 2 without this step, since we'd still
+			//have distinct ranges, but this step allows us to find the answer to part 1 as well.
 			$c[1] = $n[1];
 		} else {
 			$r[] = $c;
@@ -45,7 +53,7 @@ foreach($r as $s){
 }
 
 echo "There are {$totalIps} allowed.".PHP_EOL;
-
+echo "Lowest allowed IP is ".($r[0][1]+1).PHP_EOL;
 
 function inRange($x,$a,$b){
 	return (bccomp($x,$a) >= 0 && bccomp($x,$b) <= 0);
