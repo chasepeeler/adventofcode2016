@@ -2,8 +2,8 @@
 
 
 $instructions = array_map("trim",file(__DIR__."/input.txt"));
-
-$registers = ['a'=>0,'b'=>0,'c'=>0,'d'=>0];
+//only difference is an input of 12 instead of 7
+$registers = ['a'=>12,'b'=>0,'c'=>0,'d'=>0];
 
 //keeps track of the current instruction
 $pointer = 0;
@@ -11,7 +11,8 @@ $pointer = 0;
 //regexes to determine the instruction
 $cpy = '/cpy (-?[a-d0-9]+) ([a-d])/';
 $incdec = '/(inc|dec) ([a-d])/';
-$jnz = '/jnz (-?[a-d0-9]+) (-?\d+)/';
+$jnz = '/jnz (-?[a-d0-9]+) (-?[a-d0-9]+)/';
+$tgl = '/tgl (-?[a-d0-9]+)/';
 
 //loop as long as we are pointed at a valid instruction
 while(array_key_exists($pointer,$instructions)){
@@ -65,11 +66,28 @@ while(array_key_exists($pointer,$instructions)){
 			//otherwise just go to the next instruction
 			$pointer++;
 		}
+	} elseif(preg_match($tgl,$ins,$m)){
+		$tgl_ins = $m[1];
+		
+		if(!is_numeric($tgl_ins)){
+			$tgl_ins = $registers[$tgl_ins];
+		}
+		
+		$tgl_pointer = $pointer + $tgl_ins;
+		if(array_key_exists($tgl_pointer,$instructions)){
+			$t = explode(" ",$instructions[$tgl_pointer]);
+			if(count($t) == 2){
+				$t[0] = $t[0] == 'inc' ? 'dec' : 'inc';
+			} elseif(count($t) == 3){
+				$t[0] = $t[0] == 'jnz' ? 'cpy' : 'jnz';
+			}
+			$instructions[$tgl_pointer] = implode(" ",$t);
+		}
+		$pointer++;
 	} else {
-		//just in case
-		echo "Invalid Command: {$ins}".PHP_EOL;
-		exit(1);
+		//bad command, skip it
 	}
+
 	
 }
 

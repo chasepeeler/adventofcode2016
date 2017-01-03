@@ -52,12 +52,19 @@ while(array_key_exists($pointer,$instructions)){
 			//otherwise the value we should test is in the specified register
 			$test = $registers[$m[1]];
 		}
+		if(is_numeric($m[2])){
+			//if the second parameter is a number, we'll use that to determine how many positions to change
+			$change = $m[2];
+		} else {
+			//otherwise the value in the specified register will be used
+			$change = $registers[$m[2]];
+		}
 		
 		//only jump if the test value is NOT zero.
 		if($test != 0){
 			//the amount we jump is relative to the current position, so, modify the pointer
 			//by the amount specified in the 2nd parameter
-			$pointer += $m[2];
+			$pointer += $change;
 		} else {
 			//otherwise just go to the next instruction
 			$pointer++;
