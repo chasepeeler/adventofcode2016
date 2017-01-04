@@ -84,9 +84,9 @@ $distance++;
 
 //at this point, we need to just move our data straight up (assuming we don't hit any walls)
 //as long as we don't hit a wall, it takes 5 moves to get the data up one row
-// a  b     a b   a b     a _    _ a     t a
-// t  c     t c   t _     t b    t b     _ b
-// _  d     d _   d c     d c    d c     c d
+// a b       a b       a b       a _       _ a       t a
+// t c  -1-> t c  -2-> t _  -3-> t b  -4-> t b  -5-> _ b
+// _ d       d _       d c       d c       d c       c d
 
 //For my input, I can be sure this will always have no walls, so, 
 //we just need to multiple the number of rows to move it up by 5
